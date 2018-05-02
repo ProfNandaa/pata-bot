@@ -1,0 +1,32 @@
+{
+  "name": "pata-bot",
+  "version": "1.0.0",
+  "description": "Bot to help people find groups that fit them",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProfNandaa/pata-bot.git"
+  },
+  "keywords": [
+    "messenger",
+    "bot",
+    "groups"
+  ],
+  "author": "profnandaa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ProfNandaa/pata-bot/issues"
+  },
+  "homepage": "https://github.com/ProfNandaa/pata-bot#readme",
+  "dependencies": {
+    "bootbot": "^1.0.14",
+    "bunyan": "^1.8.12",
+    "dotenv": "^5.0.1",
+    "firebase": "^4.13.1",
+    "request": "^2.85.0",
+    "validator": "^9.4.1"
+  }
+}
