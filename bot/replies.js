@@ -25,7 +25,7 @@ const start = (payload, chat, regex) => {
     // store preliminary user in DB
     const userObj = user;
     userObj.psid = user.id;
-    delete user.id;
+    delete userObj.id;
 
     req.makePostReq('auth?bot=true', userObj, (err, res) => {
       if (err) {
