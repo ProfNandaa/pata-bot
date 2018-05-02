@@ -23,11 +23,10 @@ const start = (payload, chat, regex) => {
     });
 
     // store preliminary user in DB
-    const userObj = {
-      fb_id: user.id,
-      name: `${user.first_name} ${user.last_name}`,
-      fb_picture: user.profile_pic,
-    };
+    const userObj = user;
+    userObj.psid = user.id;
+    delete user.id;
+
     req.makePostReq('auth?bot=true', userObj, (err, res) => {
       if (err) {
         console.log('user soft-registration: ', err);
@@ -36,6 +35,10 @@ const start = (payload, chat, regex) => {
 
     // save user in Firebase
     firebase.saveUser(payload.sender.id, user);
+    // save in API db too
+    req.makePostReq('user', user, (res) => {
+      console.log(res);
+    });
   });
 }
 
