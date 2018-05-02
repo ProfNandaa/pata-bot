@@ -3,9 +3,9 @@
  */
 const validator = require('validator');
 
-const postTut = (chat, start, url, title, callback) => {
-  const askUrl = (convo, repeat) => {
-    let text = `What's the tutorial url?`;
+const addGroup = (chat, type, state, callback) => {
+  const askUrl = (convo, state, repeat) => {
+    let text = `What's the group's url?`;
     if (repeat) text = `Please try again.`;
 
     let question = {
@@ -20,8 +20,8 @@ const postTut = (chat, start, url, title, callback) => {
         convo.say({
           text: `Cancelled`,
           quickReplies: [
-            { content_type: 'text', title: 'View Tutorials' },
-            { content_type: 'text', title: 'Post Tutorial', payload: 'tuts:post' }
+            { content_type: 'text', title: 'View Groups' },
+            { content_type: 'text', title: 'Add a Group', payload: 'group:post' }
           ],
         });
         return;
@@ -32,23 +32,23 @@ const postTut = (chat, start, url, title, callback) => {
       if (!validator.isURL(url, { require_protocol: true })) {
         // loop recursively until a valid url is provided
         convo.say(`Oops, this doesn't look like a valid url. Please start with http(s).`)
-          .then(() => askUrl(convo, true));
+          .then(() => askUrl(convo, {}, true));
       } else {
         // end current convo and start fresh one
         convo.end();
         const title = payload.message.attachments ? 
           payload.message.attachments[0].title : 'No Title';
-        postTut(chat, 'rating', url, title, callback);
+        addGroup(chat, 'rating', { title, url }, callback);
       }
     });
   };
 
-  const askRating = (convo, repeat) => {
+  const askRating = (convo, state, repeat) => {
     // save url sent
-    convo.set('url', url);
-    convo.set('title', title);
+    convo.set('url', state.url);
+    convo.set('title', state.title);
 
-    let text = `How would you rate this tutorial?`;
+    let text = `How likely are you to recommend this group to a friend (1 - 5)?`;
     if (repeat) text = `Please try again.`;
 
     let question = {
@@ -68,8 +68,8 @@ const postTut = (chat, start, url, title, callback) => {
         convo.say({
           text: `Cancelled`,
           quickReplies: [
-            { content_type: 'text', title: 'View Tutorials' },
-            { content_type: 'text', title: 'Post Tutorial', payload: 'tuts:post' }
+            { content_type: 'text', title: 'View Groups' },
+            { content_type: 'text', title: 'Add a Group', payload: 'group:post' }
           ],
         });
         return;
@@ -89,7 +89,7 @@ const postTut = (chat, start, url, title, callback) => {
   };
 
   const askComment = (convo, repeat) => {
-    let text = `Please leave a brief comment on why you prefer this tutorial?`;
+    let text = `Please leave a brief about this group`;
     if (repeat) text = `Please try again.`;
 
     let question = {
@@ -105,8 +105,8 @@ const postTut = (chat, start, url, title, callback) => {
         convo.say({
           text: `Cancelled`,
           quickReplies: [
-            { content_type: 'text', title: 'View Tutorials' },
-            { content_type: 'text', title: 'Post Tutorial', payload: 'tuts:post' }
+            { content_type: 'text', title: 'View Groups' },
+            { content_type: 'text', title: 'Add a Group', payload: 'group:post' }
           ],
         });
         return;
@@ -137,14 +137,14 @@ const postTut = (chat, start, url, title, callback) => {
 
   // start convo
   chat.conversation((convo) => {
-    if (start === 'rating') {
-      askRating(convo);
+    if (type == 'rating') {
+      askRating(convo, state);
     } else {
-      askUrl(convo);
+      askUrl(convo, state);
     }
   });
 }
 
 module.exports = {
-  postTut,
+  addGroup,
 };

@@ -8,11 +8,11 @@ const replies = require('./replies');
 const req = require('./req');
 
 // tuts
-const tuts = (payload, chat, start, url, title) => {
-  convos.postTut(chat, start, url, title, (tut) => {
-    tut.excerpt = '-'; // as placeholder for now
-    req.makePostReq(`tut?fb_id=${payload.sender.id}`, tut, (err, res) => {
-      if (!err) chat.say(`Tutorial posted, thanks!`);
+const group = (payload, chat) => {
+  convos.addGroup(chat, 'url', {}, (group) => {
+    req.makePostReq(`tut?psid=${payload.sender.id}`, group, (err, res) => {
+      console.log(res);
+      if (!err) chat.say(`Group added, thanks!`);
       else console.error(err);
     });
   });
@@ -33,8 +33,8 @@ const recs = (payload, chat, tutId) => {
 }
 
 const menu = (payload, chat, id) => {
-  if (id == 'categories') {
-    cr.categories(payload, chat);
+  if (id == 'groups') {
+    cr.groups(payload, chat);
   } else {
     chat.say(`Snap! Something went wrong :(`);
   }
@@ -65,8 +65,8 @@ const tour = (payload, chat, step) => {
     chat.say({
       text,
       quickReplies: [
-        { content_type: 'text', title: 'Ok, let\'s go!', payload: 'menu:categories' },
-        { content_type: 'text', title: 'Add a Group', payload: 'tuts:post' },
+        { content_type: 'text', title: 'Ok, let\'s go!', payload: 'menu:groups' },
+        { content_type: 'text', title: 'Add a Group', payload: 'group:post' },
       ],
     });
   }
@@ -79,7 +79,7 @@ const tour = (payload, chat, step) => {
  * @param {int} id 
  */
 const rec = (payload, chat, id) => {
-  convos.postTut(chat, 'rating', id, '', (tut) => {
+  convos.addGroup(chat, 'rating', id, '', (tut) => {
     const data = {
       tut_id: id,
       rating: tut.rating,
@@ -117,7 +117,7 @@ const bookmark = (payload, chat, id) => {
 module.exports = {
   start: replies.start,
   tour,
-  tuts,
+  group,
   menu,
   categoryTuts,
   rec,

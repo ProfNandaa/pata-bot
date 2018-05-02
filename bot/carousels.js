@@ -12,23 +12,23 @@ const utils = {
   },
 };
 
-const getCategoryElems = (cats) => {
+const getGroupElems = (groups) => {
   const elems = [];
-  cats.forEach((cat) => {
+  groups.forEach((group) => {
     let elem = {
-      title: cat.name,
-      // image_url: 'http://lorempixel.com/200/120/abstract/',
-      subtitle: `${cat.count} tutorials`,
+      title: group.name,
+      image_url: group.url,
+      subtitle: group.location ? ` In ${group.location}` : ' Unspecified Location',
       buttons: [
         {
           type: 'postback',
           title: 'View',
-          payload: `categoryTuts:${cat.name}`,
+          payload: `viewGroup:${group.id}`,
         },
         {
           type: 'postback',
           title: 'Follow',
-          payload: `follow:${cat.id}`,
+          payload: `follow:${group.id}`,
         },
       ],
     };
@@ -95,12 +95,13 @@ const categoryTuts = (payload, chat, tag) => {
     if (errReply) {
       chat.say(`Something went wrong, we'll get back.`);
     }
-  })
+  });
 }
 
-// tutorial categories / tags
-const categories = (payload, chat) => {
-  req.makeGetReq('tag?popular=true', (err, res) => {
+// list top groups based on ratings
+// and other heauristics later on (recommended groups)
+const groups = (payload, chat) => {
+  req.makeGetReq('group?popular=true', (err, res) => {
     let errReply = false;
     if (err) {
       console.log('err:', err);
@@ -108,7 +109,7 @@ const categories = (payload, chat) => {
     } else {
       let cats = JSON.parse(res.body);
       if (utils.validArray(cats)) {
-        let elems = getCategoryElems(cats);
+        let elems = getGroupElems(cats);
         chat.sendGenericTemplate(elems);
       } else {
         errReply = true;
@@ -167,8 +168,8 @@ const getRecElems = (recs) => {
  * @param {object} payload
  * @param {object} chat
  */
-const recs = (payload, chat, tutId) => {
-  req.makeGetReq(`rec?tut_id=${tutId}`, (err, res) => {
+const recs = (payload, chat, groupId) => {
+  req.makeGetReq(`rec?group_id=${groupId}`, (err, res) => {
     let errReply = false;
     if (err) {
       console.log('err:', err);
@@ -190,7 +191,7 @@ const recs = (payload, chat, tutId) => {
 }
 
 module.exports = {
-  categories,
+  groups,
   categoryTuts,
   tutsFind,
   recs,

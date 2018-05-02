@@ -41,12 +41,12 @@ bot.on('message', (payload, chat) => {
     }
   }
   // hijack any posted link
-  if (isURL(payload.message.text, { require_protocol: true })) {
-    const url = payload.message.text;
-    const title = payload.message.attachments ? 
-      payload.message.attachments[0].title : 'No Title';
-    postbacks.tuts(payload, chat, 'rating', url, title);
-  }
+  // if (isURL(payload.message.text, { require_protocol: true })) {
+  //   const url = payload.message.text;
+  //   const title = payload.message.attachments ? 
+  //     payload.message.attachments[0].title : 'No Title';
+  //   postbacks.group(payload, chat, 'rating', url, title);
+  // }
 
   // log to Firebase
   firebase.logUserActivity(payload.sender.id, {
@@ -66,13 +66,14 @@ bot.hear([
 );
 
 // list categories
-bot.hear([/categories/i, /tutorials/i], cr.categories);
+bot.hear([/view groups/i, /groups/i], cr.groups);
+bot.hear([/add group/i, /add a group/i], postbacks.group);
 
 // find tutorial
 bot.hear([/^find/i], cr.tutsFind);
 
 // list all trending artwork
-bot.hear([/trending/i], cr.categories);
+bot.hear([/trending/i], cr.groups);
 
 // bot.hear(/.*/, (payload, chat) => {
 //   replies.all(payload, chat, 'all');
@@ -107,14 +108,14 @@ bot.setPersistentMenu([
     title: 'Take Tour',
     payload: 'tour:0',
   },
-//   {
-//     type: 'postback',
-//     title: 'Categories',
-//     payload: 'menu:categories',
-//   },
   {
     type: 'postback',
-    title: 'My Profile',
+    title: 'Top Groups',
+    payload: 'menu:groups',
+  },
+  {
+    type: 'postback',
+    title: 'Add Group',
     payload: 'menu:profile',
   }
 ]);
